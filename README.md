@@ -45,16 +45,13 @@ The framework allows users to upload any CSV dataset through a Streamlit-based u
 
 🗂️ Project Directory Structure
 
-Your current structure:
-
-GREENAI_Model
-|
-├── __pycache__
-|
-├── data
-│   ├── raw
+```text
+GREENAI_Model/
+│
+├── data/
+│   ├── raw/
 │   │   └── user_dataset.csv
-│   └── processed
+│   └── processed/
 │       └── cleaned_data.csv
 │
 ├── notebooks/
@@ -85,7 +82,7 @@ GREENAI_Model
 ├── main.py
 ├── README.md
 └── requirements.txt
-
+```
 -------------------------------------------------------------------------
 
 ⚙️ System Requirements
@@ -172,5 +169,6 @@ A dataset-agnostic Green AI framework that compares machine learning models base
 
 
 This project is intended for educational and internship purposes only.
+
 
 
