@@ -85,6 +85,7 @@ GREENAI_Model/
 ├── main.py
 ├── README.md
 └── requirements.txt
+
 -------------------------------------------------------------------------
 
 ⚙️ System Requirements
@@ -168,5 +169,6 @@ A dataset-agnostic Green AI framework that compares machine learning models base
 -------------------------------------------------------------------------
 
 📄 License
+
 
 This project is intended for educational and internship purposes only.
