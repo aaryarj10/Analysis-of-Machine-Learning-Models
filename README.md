@@ -169,6 +169,11 @@ A dataset-agnostic Green AI framework that compares machine learning models base
 
 
 This project is intended for educational and internship purposes only.
+-------------------------------------------------------------------------
+
+🚀 Deployed Application
+
+https://analysis-of-machine-learning-models-ehzag6fnl339432oj8ifoj.streamlit.app/
 
 
 
