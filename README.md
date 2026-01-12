@@ -167,13 +167,14 @@ A dataset-agnostic Green AI framework that compares machine learning models base
 
 📄 License
 
-
 This project is intended for educational and internship purposes only.
--------------------------------------------------------------------------
 
-🚀 Deployed Application
+🚀 Live Demo
+
+🔗 Streamlit App:
 
 https://analysis-of-machine-learning-models-ehzag6fnl339432oj8ifoj.streamlit.app/
+
 
 
 
