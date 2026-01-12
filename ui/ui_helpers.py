@@ -4,6 +4,7 @@ import streamlit as st
 import os
 
 
+# Function to save and show plots
 def save_and_show(fig, filename):
     os.makedirs("results/graphs", exist_ok=True)
     fig.savefig(f"results/graphs/{filename}", bbox_inches="tight")
@@ -11,7 +12,7 @@ def save_and_show(fig, filename):
     plt.close(fig)
 
 
-# 1️⃣ Target Distribution
+# Target Distribution Graph
 def plot_target_distribution(df, target):
     st.subheader("📊 Target Variable Distribution")
 
@@ -30,7 +31,7 @@ def plot_target_distribution(df, target):
     save_and_show(fig, "target_distribution.png")
 
 
-# 2️⃣ Missing Values
+# Missing Values Graph
 def plot_missing_values(df):
     missing = df.isnull().sum()
     missing = missing[missing > 0]
@@ -49,7 +50,7 @@ def plot_missing_values(df):
     save_and_show(fig, "missing_values.png")
 
 
-# 3️⃣ Correlation Heatmap
+# Correlation Heatmap Graph
 def plot_correlation(df):
     numeric_df = df.select_dtypes(include="number")
     if numeric_df.shape[1] < 2:
@@ -64,7 +65,7 @@ def plot_correlation(df):
     save_and_show(fig, "correlation_heatmap.png")
 
 
-# 4️⃣ Accuracy Comparison
+# Accuracy Comparison Graph
 def plot_accuracy(results_df):
     metric = "R2 Score" if "R2 Score" in results_df.columns else "Accuracy"
 
@@ -79,7 +80,7 @@ def plot_accuracy(results_df):
     save_and_show(fig, "accuracy_comparison.png")
 
 
-# 5️⃣ Energy Comparison
+# Energy Consumption Comparison Graph
 def plot_energy(results_df):
     st.subheader("⚡ Energy Consumption (Training Time)")
 
@@ -92,7 +93,7 @@ def plot_energy(results_df):
     save_and_show(fig, "energy_comparison.png")
 
 
-# 6️⃣ Trade-off
+# Trade-off Graph
 def plot_tradeoff(results_df):
     metric = "R2 Score" if "R2 Score" in results_df.columns else "Accuracy"
 
