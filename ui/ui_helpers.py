@@ -11,6 +11,18 @@ def save_and_show(fig, filename):
     st.pyplot(fig)
     plt.close(fig)
 
+# Compute Accuracy Percentage
+def compute_accuracy_percent(results_df, y_range):
+    # Regression-only accuracy calculation
+    if "MAE" not in results_df.columns:
+        return results_df  # Classification case
+
+    results_df["Accuracy (%)"] = (
+        1 - (results_df["MAE"] / y_range)
+    ) * 100
+
+    return results_df
+
 
 # Target Distribution Graph
 def plot_target_distribution(df, target):
@@ -67,13 +79,12 @@ def plot_correlation(df):
 
 # Accuracy Comparison Graph
 def plot_accuracy(results_df):
-    metric = "R2 Score" if "R2 Score" in results_df.columns else "Accuracy"
-
     st.subheader("🎯 Model Accuracy Comparison")
 
     fig, ax = plt.subplots(figsize=(5,4))
-    ax.bar(results_df["Model"], results_df[metric], color="#673AB7")
-    ax.set_ylabel(metric)
+    ax.bar(results_df["Model"], results_df["Accuracy (%)"], color="#673AB7")
+    ax.set_ylabel("Accuracy (%)")
+    ax.set_ylim(0, 100)
     ax.set_title("Accuracy Comparison")
     plt.xticks(rotation=20)
 
@@ -95,23 +106,28 @@ def plot_energy(results_df):
 
 # Trade-off Graph
 def plot_tradeoff(results_df):
-    metric = "R2 Score" if "R2 Score" in results_df.columns else "Accuracy"
-
     st.subheader("🌱 Accuracy vs Energy Trade-off")
+    st.caption("ℹ️ Accuracy (%) is derived from normalized MAE for regression tasks.")
 
     fig, ax = plt.subplots(figsize=(5,4))
-    ax.scatter(results_df["Training Time (s)"], results_df[metric], color="#009688")
+    ax.scatter(
+        results_df["Training Time (s)"],
+        results_df["Accuracy (%)"],
+        color="#009688"
+    )
 
     for i, model in enumerate(results_df["Model"]):
         ax.text(
             results_df["Training Time (s)"][i],
-            results_df[metric][i],
+            results_df["Accuracy (%)"][i],
             model
         )
 
     ax.set_xlabel("Training Time (s)")
-    ax.set_ylabel(metric)
+    ax.set_ylabel("Accuracy (%)")
+    ax.set_ylim(0, 100)
     ax.set_title("Accuracy vs Energy")
 
     save_and_show(fig, "accuracy_vs_energy.png")
+
 
