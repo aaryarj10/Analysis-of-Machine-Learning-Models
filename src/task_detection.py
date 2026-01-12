@@ -1,15 +1,15 @@
 def detect_task_type(df, target_column):
-    """
-    Automatically detect whether the problem is
-    regression or classification.
-    """
-
+    
     unique_values = df[target_column].nunique()
     dtype = df[target_column].dtype
 
-    # Classification: few unique values or categorical
-    if unique_values <= 10 or dtype == "object":
+    # Categorical → classification
+    if dtype == "object":
         return "classification"
 
-    # Otherwise regression
+    # Numeric with very few unique values → classification
+    if unique_values <= 10:
+        return "classification"
+
+    # Otherwise → regression
     return "regression"
