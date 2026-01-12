@@ -2,15 +2,19 @@ import streamlit as st
 import pandas as pd
 import sys
 import os
+from src.task_detection import detect_task_type
+
 
 # Page Config
 st.set_page_config(page_title="Green AI Dashboard", layout="centered")
+
 
 # Path to access backend
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from main import run_pipeline
 from ui.ui_helpers import (
+    compute_accuracy_percent,
     plot_target_distribution,
     plot_missing_values,
     plot_correlation,
@@ -19,16 +23,33 @@ from ui.ui_helpers import (
     plot_tradeoff,
 )
 
+
 # AI Model Ranking
 def add_model_ranking(results_df):
-    metric = "R2 Score" if "R2 Score" in results_df.columns else "Accuracy"
 
-    acc_norm = (results_df[metric] - results_df[metric].min()) / (
-        results_df[metric].max() - results_df[metric].min()
+    if "Accuracy (%)" in results_df.columns:
+        metric = "Accuracy (%)"
+    elif "R2 Score" in results_df.columns:
+        metric = "R2 Score"
+    else:
+        st.error("No valid accuracy metric found for ranking.")
+        return results_df
+
+    # Normalize accuracy 
+    acc_range = results_df[metric].max() - results_df[metric].min()
+    if acc_range == 0:
+        acc_norm = 1 
+    else:
+        acc_norm = (results_df[metric] - results_df[metric].min()) / acc_range
+
+    # Normalize training time
+    time_range = (
+        results_df["Training Time (s)"].max()
+        - results_df["Training Time (s)"].min()
     )
-
-    time_norm = (results_df["Training Time (s)"] - results_df["Training Time (s)"].min()) / (
-        results_df["Training Time (s)"].max() - results_df["Training Time (s)"].min()
+    time_norm = (
+        (results_df["Training Time (s)"] - results_df["Training Time (s)"].min())
+        / time_range
     )
 
     results_df["Green AI Score"] = (0.7 * acc_norm) + (0.3 * (1 - time_norm))
@@ -40,14 +61,17 @@ def add_model_ranking(results_df):
 
     return ranked_df
 
-# Title
+
+# Title             
 st.title("🌱 Green AI Model Comparison")
+
 
 # Upload Dataset
 uploaded_file = st.file_uploader("Upload CSV Dataset", type=["csv"])
 
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
+
 
 # Dataset Preview 
     st.subheader("📄 Dataset Preview")
@@ -56,11 +80,13 @@ if uploaded_file:
 
     target_column = st.selectbox("🎯 Select Target Column", df.columns)
 
+
 # Dataset Visualization for feature and target analysis
     with st.expander("📊 Dataset Visualizations"):
         plot_target_distribution(df, target_column)
         plot_missing_values(df)
         plot_correlation(df)
+
 
 # Run Analysis
     if st.button("🚀 Run Model Analysis"):
@@ -70,9 +96,20 @@ if uploaded_file:
 
         results_df = run_pipeline(file_path, target_column)
 
+        task_type = detect_task_type(df, target_column)
+        st.caption(f"🔍 Detected Task Type: **{task_type.upper()}**")
+
+        if task_type == "regression":
+            y_range = df[target_column].max() - df[target_column].min()
+            results_df = compute_accuracy_percent(results_df, y_range)
+        else:
+            results_df["Accuracy (%)"] = results_df["Accuracy"] * 100
+
+
 # Comparison Table
         st.subheader("📈 Model Comparison Results")
         st.dataframe(results_df)
+
 
 # Recommendation Cards 
         metric = "R2 Score" if "R2 Score" in results_df.columns else "Accuracy"
@@ -97,14 +134,20 @@ if uploaded_file:
                 delta=f"Time: {round(best_energy['Training Time (s)'], 3)} s"
             )
 
+
 # Green AI Ranking Results
         ranked_df = add_model_ranking(results_df)
 
+
 # Model Performance Visualizations 
+        y_range = df[target_column].max() - df[target_column].min()
+        results_df = compute_accuracy_percent(results_df, y_range)
+
         with st.expander("📉 Model Performance Visualizations"):
             plot_accuracy(results_df)
             plot_energy(results_df)
             plot_tradeoff(results_df)
+
 
 # Download Report
         csv = results_df.to_csv(index=False).encode("utf-8")
